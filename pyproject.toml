@@ -36,3 +36,7 @@ server = ["fastapi", "uvicorn", "requests"]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+server-setup = "poetry install --extras server"
+
