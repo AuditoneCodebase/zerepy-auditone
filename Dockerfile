@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y curl && \
 COPY pyproject.toml poetry.lock ./
 
 # Install dependencies with extras
-RUN $HOME/.local/bin/poetry install --extras server --no-dev --no-interaction --no-ansi
+RUN $HOME/.local/bin/poetry install --extras server
 
 # Copy the rest of the application
 COPY . .
