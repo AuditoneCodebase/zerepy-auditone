@@ -523,6 +523,7 @@ class SonicConnection(BaseConnection):
                                       4) if total_liquidity_weight > 0 else 0
 
             return {
+                "status":"success",
                 "token": token_symbol.upper(),
                 "totalPairs": total_pairs,
                 "totalLiquidityUsd": round(total_liquidity_usd, 2),
