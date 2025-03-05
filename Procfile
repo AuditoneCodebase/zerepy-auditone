@@ -1,1 +1,1 @@
-web: /app/.local/bin/poetry run uvicorn main:app --host 0.0.0.0 --port $PORT --workers 4
+web: poetry run python main.py --server --host 0.0.0.0 --port 8000
