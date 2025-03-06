@@ -39,6 +39,7 @@ class SonicConnection(BaseConnection):
         self.NATIVE_TOKEN = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
         self.aggregator_api = "https://aggregator-api.kyberswap.com/sonic/api/v1"
         self.dex_api = "https://api.dexscreener.com/latest/dex/search?q="
+        self.security_api = "https://api.auditone.io/securityStats"
 
 
     def _get_explorer_link(self, tx_hash: str) -> str:
@@ -152,7 +153,13 @@ class SonicConnection(BaseConnection):
                     ActionParameter("token_symbol", True, str, "Token ticker symbol to look up")
                 ],
                 description="Get token address by ticker symbol"
-            )
+            ),
+            "get-security-stats": Action(
+                name="get-security-stats",
+                parameters=[
+                    ActionParameter("project_name", True, str, "Protocol name")
+                ],
+                description="Get security stats by protocol name")
         }
 
     def configure(self) -> bool:
@@ -537,6 +544,28 @@ class SonicConnection(BaseConnection):
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching token stats: {e}")
             return {"status": "error", "message": str(e)}
+
+    def get_security_stats(self, project_name: str) -> Dict[str, Any]:
+        """
+        Fetches security stats for a given project from AuditOne API.
+
+        Parameters:
+        - project_name (str): The name of the project (e.g., "Solv Protocol")
+
+        Returns:
+        - Security Stats (Audit Reports, Score, Incidents, etc.)
+        """
+        try:
+            payload = {"project_name": project_name}
+            headers = {"accept": "application/json", "Content-Type": "application/json"}
+            response = requests.post(self.security_api, json=payload, headers=headers)
+            response.raise_for_status()
+
+            return response.json()
+
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching security stats for {project_name}: {e}")
+            return {"status": "error", "message": f"Failed to fetch security stats for {project_name}"}
 
     def perform_action(self, action_name: str, kwargs) -> Any:
         """Execute a Sonic action with validation"""

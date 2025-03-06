@@ -186,6 +186,9 @@ class OpenAIConnection(BaseConnection):
                 logger.info("\nFINE-TUNED MODELS:")
                 for i, model in enumerate(fine_tuned_models):
                     logger.info(f"{i+1}. {model.id}")
+
+            model_list = [model.id for model in response]
+            return model_list
                     
         except Exception as e:
             raise OpenAIAPIError(f"Listing models failed: {e}")
