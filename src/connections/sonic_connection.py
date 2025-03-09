@@ -390,10 +390,10 @@ class SonicConnection(BaseConnection):
             logger.error(f"Approval failed: {e}")
             raise
 
-    def swap(self, token_in: str, token_out: str, amount: float, slippage: float = 0.5) -> str:
+    def swap(self, private_key:str, token_in: str, token_out: str, amount: float, slippage: float = 0.5) -> str:
         """Execute a token swap using the KyberSwap router"""
         try:
-            private_key = os.getenv('SONIC_PRIVATE_KEY')
+            #private_key = os.getenv('SONIC_PRIVATE_KEY')
             account = self._web3.eth.account.from_key(private_key)
 
             # Check token balance before proceeding
