@@ -140,6 +140,7 @@ class SonicConnection(BaseConnection):
             "swap": Action(
                 name="swap",
                 parameters=[
+                    ActionParameter("private_key", True, str, "Input private key"),
                     ActionParameter("token_in", True, str, "Input token address"),
                     ActionParameter("token_out", True, str, "Output token address"),
                     ActionParameter("amount", True, float, "Amount to swap"),
@@ -320,10 +321,10 @@ class SonicConnection(BaseConnection):
             logger.error(f"Failed to get swap route: {e}")
             raise
 
-    def _get_encoded_swap_data(self, route_summary: Dict, slippage: float = 0.5) -> str:
+    def _get_encoded_swap_data(self, private_key:str,route_summary: Dict, slippage: float = 0.5) -> str:
         """Get encoded swap data from Kyberswap API"""
         try:
-            private_key = os.getenv('SONIC_PRIVATE_KEY')
+            #private_key = os.getenv('SONIC_PRIVATE_KEY')
             account = self._web3.eth.account.from_key(private_key)
 
             url = f"{self.aggregator_api}/route/build"
@@ -351,10 +352,10 @@ class SonicConnection(BaseConnection):
             logger.error(f"Failed to encode swap data: {e}")
             raise
 
-    def _handle_token_approval(self, token_address: str, spender_address: str, amount: int) -> None:
+    def _handle_token_approval(self, private_key:str, token_address: str, spender_address: str, amount: int) -> None:
         """Handle token approval for spender"""
         try:
-            private_key = os.getenv('SONIC_PRIVATE_KEY')
+            #private_key = os.getenv('SONIC_PRIVATE_KEY')
             account = self._web3.eth.account.from_key(private_key)
 
             token_contract = self._web3.eth.contract(
@@ -409,7 +410,7 @@ class SonicConnection(BaseConnection):
             route_data = self._get_swap_route(token_in, token_out, amount)
 
             # Get encoded swap data
-            encoded_data = self._get_encoded_swap_data(route_data["routeSummary"], slippage)
+            encoded_data = self._get_encoded_swap_data(private_key,route_data["routeSummary"], slippage)
 
             # Get router address from route data
             router_address = route_data["routerAddress"]
@@ -425,7 +426,7 @@ class SonicConnection(BaseConnection):
                     )
                     decimals = token_contract.functions.decimals().call()
                     amount_raw = int(amount * (10 ** decimals))
-                self._handle_token_approval(token_in, router_address, amount_raw)
+                self._handle_token_approval(private_key,token_in, router_address, amount_raw)
 
             # Prepare transaction
             tx = {
