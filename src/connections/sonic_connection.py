@@ -494,6 +494,9 @@ class SonicConnection(BaseConnection):
 
             for pair in data:
                 try:
+                    if pair.get("chainId") != "sonic":
+                        continue
+
                     base_token = pair.get("baseToken", {}).get("symbol", "").lower()
                     if base_token != token_symbol.lower():
                         continue  # Skip non-matching tokens
